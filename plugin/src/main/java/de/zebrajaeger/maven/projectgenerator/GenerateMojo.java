@@ -16,7 +16,6 @@ package de.zebrajaeger.maven.projectgenerator;
  * limitations under the License.
  */
 
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.archetype.ui.generation.ArchetypeGenerationConfigurator;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -40,118 +39,118 @@ import org.apache.maven.shared.dependencies.resolve.DependencyResolverException;
 import org.eclipse.aether.RepositorySystemSession;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ServiceLoader;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * Goal which touches a timestamp file.
  */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresProject = false)
+@SuppressWarnings("unused")
 public class GenerateMojo extends AbstractMojo {
 
     @Component
+    @SuppressWarnings("unused")
     private ArchetypeGenerationConfigurator configurator;
 
     @Parameter(property = "archetypeGroupId", defaultValue = "de.zebrajaeger")
+    @SuppressWarnings("unused")
     private String archetypeGroupId;
     @Parameter(property = "archetypeArtifactId", defaultValue = "project-generator-testproject")
+    @SuppressWarnings("unused")
     private String archetypeArtifactId;
     @Parameter(property = "archetypeVersion", defaultValue = "0.0.1-SNAPSHOT")
+    @SuppressWarnings("unused")
     private String archetypeVersion;
 
     @Parameter(defaultValue = "${localRepository}", readonly = true, required = true)
+    @SuppressWarnings("unused")
     private ArtifactRepository localRepository;
     @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true, required = true)
+    @SuppressWarnings("unused")
     private List<ArtifactRepository> remoteArtifactRepositories;
 
     @Parameter(defaultValue = "${repositorySystemSession}", readonly = true, required = true)
+    @SuppressWarnings("unused")
     private RepositorySystemSession repoSession;
 
     @Parameter(defaultValue = "${session}", required = true, readonly = true)
+    @SuppressWarnings("unused")
     private MavenSession session;
 
     @Component
+    @SuppressWarnings("unused")
     private ArtifactResolver artifactResolver;
 
     @Component
+    @SuppressWarnings("unused")
     private DependencyResolver dependencyResolver;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         File file;
         try {
             file = findProjectJar();
+        } catch (ArtifactResolverException e) {
+            throw new MojoExecutionException("Couldn't resolve template artifact: " + e.getMessage(), e);
+        }
 
-            DefaultDependableCoordinate coordinate = new DefaultDependableCoordinate();
-            coordinate.setGroupId(archetypeGroupId);
-            coordinate.setArtifactId(archetypeArtifactId);
-            coordinate.setVersion(archetypeVersion);
+        // Coordinate of Project Template jar
+        DefaultDependableCoordinate coordinate = new DefaultDependableCoordinate();
+        coordinate.setGroupId(archetypeGroupId);
+        coordinate.setArtifactId(archetypeArtifactId);
+        coordinate.setVersion(archetypeVersion);
 
-            ProjectBuildingRequest buildingRequest =
-                    new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
-
-            getLog().info("Resolving " + coordinate + " with transitive dependencies");
-            List<URL> cp = new LinkedList<>();
-            try {
-                Iterable<ArtifactResult> artifactResults = dependencyResolver.resolveDependencies(buildingRequest, coordinate, null);
-                Iterator<ArtifactResult> iterator = artifactResults.iterator();
-                while(iterator.hasNext()){
-                    ArtifactResult r = iterator.next();
-                    System.out.println(r.getArtifact());
-                    cp.add(r.getArtifact().getFile().toURI().toURL());
-                }
-            } catch (DependencyResolverException e) {
-                throw new MojoExecutionException("Couldn't download artifact: " + e.getMessage(), e);
-            } catch (MalformedURLException e) {
-                throw new MojoExecutionException("Couldn't get URI of artifact: " + e.getMessage(), e);
+        // Collect template jar, dependency jars and transitive dependency jars
+        List<URL> classpath = new LinkedList<>();
+        ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
+        getLog().info("Resolving " + coordinate + " with transitive dependencies");
+        try {
+            Iterable<ArtifactResult> artifactResults = dependencyResolver.resolveDependencies(buildingRequest, coordinate, null);
+            Iterator<ArtifactResult> iterator = artifactResults.iterator();
+            while (iterator.hasNext()) {
+                ArtifactResult artifactResult = iterator.next();
+                System.out.println(artifactResult.getArtifact());
+                classpath.add(artifactResult.getArtifact().getFile().toURI().toURL());
             }
+        } catch (DependencyResolverException e) {
+            throw new MojoExecutionException("Couldn't download artifact: " + e.getMessage(), e);
+        } catch (MalformedURLException e) {
+            throw new MojoExecutionException("Couldn't get URI of artifact: " + e.getMessage(), e);
+        }
 
-            URLClassLoader urlClassLoader = URLClassLoader.newInstance(cp.toArray(new URL[cp.size()]));
+        try {
+            // Start Executor into dedicated classloader with all the collected dependencies
+            URLClassLoader urlClassLoader = URLClassLoader.newInstance(classpath.toArray(new URL[classpath.size()]));
             Class<?> executorClazz = urlClassLoader.loadClass(Executor.class.getName());
             Object executor = executorClazz.newInstance();
             Method exec = executorClazz.getMethod("exec", String.class);
             exec.invoke(executor, file.getAbsolutePath());
 
-            //processJarResources(file);
             System.out.println("YO!!!" + file.getAbsolutePath());
-        } catch (ArtifactResolverException | ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
+            throw new MojoExecutionException("Couldn't start executor: " + e.getMessage(), e);
         }
     }
 
     private File findProjectJar() throws ArtifactResolverException {
-        File file;
-        DefaultArtifactCoordinate c = new DefaultArtifactCoordinate();
-        c.setGroupId(archetypeGroupId);
-        c.setArtifactId(archetypeArtifactId);
-        c.setVersion(archetypeVersion);
+        DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
+        coordinate.setGroupId(archetypeGroupId);
+        coordinate.setArtifactId(archetypeArtifactId);
+        coordinate.setVersion(archetypeVersion);
 
-        DefaultProjectBuildingRequest r = new DefaultProjectBuildingRequest();
-        r.setLocalRepository(localRepository);
-        r.setRemoteRepositories(remoteArtifactRepositories);
-        r.setRepositorySession(repoSession);
+        DefaultProjectBuildingRequest projectBuildingRequest = new DefaultProjectBuildingRequest();
+        projectBuildingRequest.setLocalRepository(localRepository);
+        projectBuildingRequest.setRemoteRepositories(remoteArtifactRepositories);
+        projectBuildingRequest.setRepositorySession(repoSession);
 
-        ArtifactResult artifactResult = artifactResolver.resolveArtifact(r, c);
+        ArtifactResult artifactResult = artifactResolver.resolveArtifact(projectBuildingRequest, coordinate);
         Artifact artifact = artifactResult.getArtifact();
-        file = artifact.getFile();
-        return file;
+        return artifact.getFile();
     }
 }
