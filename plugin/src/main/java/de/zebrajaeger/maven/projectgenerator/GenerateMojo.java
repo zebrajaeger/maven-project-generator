@@ -137,24 +137,6 @@ public class GenerateMojo extends AbstractMojo {
         }
     }
 
-    private void processJarResources(File file) throws IOException {
-        ZipFile zipFile = new ZipFile(file);
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        List<ProjectResource> projectResources = new LinkedList<>();
-        while (entries.hasMoreElements()) {
-            ZipEntry e = entries.nextElement();
-            String name = e.getName();
-            if (name.startsWith("project_template/") || name.startsWith("project_template\\")) {
-                name = name.substring(17);
-                name = name.replace('\\', '/');
-                byte[] content = IOUtils.toByteArray(zipFile.getInputStream(e));
-                ProjectResource projectResource = new ProjectResource(name, content);
-                projectResources.add(projectResource);
-            }
-            System.out.println("** " + name);
-        }
-    }
-
     private File findProjectJar() throws ArtifactResolverException {
         File file;
         DefaultArtifactCoordinate c = new DefaultArtifactCoordinate();

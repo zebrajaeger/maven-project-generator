@@ -4,8 +4,11 @@ package de.zebrajaeger.maven.projectgenerator.jar;
  * @author Lars Brandt, Silpion IT Solutions GmbH
  */
 public class Resource extends Item {
-    public Resource(String name) {
+    private byte[] content;
+
+    public Resource(String name, byte[] content) {
         super(name);
+        this.content = content;
     }
 
     @Override
@@ -16,5 +19,9 @@ public class Resource extends Item {
     @Override
     public boolean isNode() {
         return false;
+    }
+
+    public byte[] getContent() {
+        return content;
     }
 }
