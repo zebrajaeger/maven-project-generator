@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>de.zebrajaeger</groupId>
-            <artifactId>project-generator</artifactId>
+            <artifactId>progen-maven-plugin</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.auto.service/auto-service -->

@@ -16,6 +16,7 @@ package de.zebrajaeger.maven.projectgenerator;
  * limitations under the License.
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.archetype.ui.generation.ArchetypeGenerationConfigurator;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -59,15 +60,8 @@ public class GenerateMojo extends AbstractMojo {
     @SuppressWarnings("unused")
     private ArchetypeGenerationConfigurator configurator;
 
-    @Parameter(property = "archetypeGroupId", defaultValue = "de.zebrajaeger")
-    @SuppressWarnings("unused")
-    private String archetypeGroupId;
-    @Parameter(property = "archetypeArtifactId", defaultValue = "project-generator-testproject")
-    @SuppressWarnings("unused")
-    private String archetypeArtifactId;
-    @Parameter(property = "archetypeVersion", defaultValue = "0.0.1-SNAPSHOT")
-    @SuppressWarnings("unused")
-    private String archetypeVersion;
+    @Parameter(property = "template", defaultValue = "de.zebrajaeger:project-generator-testproject:0.0.1-SNAPSHOT")
+    private String template;
 
     @Parameter(defaultValue = "${localRepository}", readonly = true, required = true)
     @SuppressWarnings("unused")
@@ -93,18 +87,34 @@ public class GenerateMojo extends AbstractMojo {
     private DependencyResolver dependencyResolver;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        // Coordinate of Project Template jar
+        DefaultDependableCoordinate coordinate = new DefaultDependableCoordinate();
+        if (StringUtils.isBlank(template)) {
+            throw new MojoFailureException("You must specify an template coordinate, "
+                    + "e.g. -Dtemplate=de.zebrajaeger:project-generator-testproject:0.0.1-SNAPSHOT");
+        }
+
+        String[] tokens = template.split(":");
+        if (tokens.length < 3 || tokens.length > 5) {
+            throw new MojoFailureException("Invalid template, you must specify "
+                    + "groupId:artifactId:version[:packaging[:classifier]] " + template);
+        }
+        coordinate.setGroupId(tokens[0]);
+        coordinate.setArtifactId(tokens[1]);
+        coordinate.setVersion(tokens[2]);
+        if (tokens.length >= 4) {
+            coordinate.setType(tokens[3]);
+        }
+        if (tokens.length == 5) {
+            coordinate.setClassifier(tokens[4]);
+        }
+
         File file;
         try {
-            file = findProjectJar();
+            file = findProjectJar(coordinate);
         } catch (ArtifactResolverException e) {
             throw new MojoExecutionException("Couldn't resolve template artifact: " + e.getMessage(), e);
         }
-
-        // Coordinate of Project Template jar
-        DefaultDependableCoordinate coordinate = new DefaultDependableCoordinate();
-        coordinate.setGroupId(archetypeGroupId);
-        coordinate.setArtifactId(archetypeArtifactId);
-        coordinate.setVersion(archetypeVersion);
 
         // Collect template jar, dependency jars and transitive dependency jars
         List<URL> classpath = new LinkedList<>();
@@ -138,11 +148,13 @@ public class GenerateMojo extends AbstractMojo {
         }
     }
 
-    private File findProjectJar() throws ArtifactResolverException {
+    private File findProjectJar(DefaultDependableCoordinate templateCoordinate) throws ArtifactResolverException {
         DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
-        coordinate.setGroupId(archetypeGroupId);
-        coordinate.setArtifactId(archetypeArtifactId);
-        coordinate.setVersion(archetypeVersion);
+        coordinate.setGroupId(templateCoordinate.getGroupId());
+        coordinate.setArtifactId(templateCoordinate.getArtifactId());
+        coordinate.setVersion(templateCoordinate.getVersion());
+        coordinate.setExtension(templateCoordinate.getType());
+        coordinate.setClassifier(templateCoordinate.getClassifier());
 
         DefaultProjectBuildingRequest projectBuildingRequest = new DefaultProjectBuildingRequest();
         projectBuildingRequest.setLocalRepository(localRepository);

@@ -1,5 +1,7 @@
 package de.zebrajaeger.maven.projectgenerator.jar;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 /**
  * @author Lars Brandt, Silpion IT Solutions GmbH
  */
@@ -24,4 +26,5 @@ public class Resource extends Item {
     public byte[] getContent() {
         return content;
     }
+
 }
