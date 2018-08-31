@@ -1,6 +1,4 @@
-package de.zebrajaeger.maven.projectgenerator.jar;
-
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+package de.zebrajaeger.maven.projectgenerator.resources;
 
 /**
  * @author Lars Brandt, Silpion IT Solutions GmbH
@@ -9,7 +7,12 @@ public class Resource extends Item {
     private byte[] content;
 
     public Resource(String name, byte[] content) {
-        super(name);
+        super(null, name);
+        this.content = content;
+    }
+
+    public Resource(Node parent, String name, byte[] content) {
+        super(parent, name);
         this.content = content;
     }
 

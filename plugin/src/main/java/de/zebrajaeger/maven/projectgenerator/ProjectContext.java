@@ -1,6 +1,6 @@
 package de.zebrajaeger.maven.projectgenerator;
 
-import de.zebrajaeger.maven.projectgenerator.jar.ResourceManager;
+import de.zebrajaeger.maven.projectgenerator.resources.ResourceManager;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import java.io.File;

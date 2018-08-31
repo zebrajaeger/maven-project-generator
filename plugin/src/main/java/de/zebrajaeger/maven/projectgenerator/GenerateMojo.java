@@ -86,7 +86,7 @@ public class GenerateMojo extends AbstractMojo {
     private DependencyResolver dependencyResolver;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        // Coordinate of Project Template jar
+        // Coordinate of Project Template resources
         DefaultDependableCoordinate coordinate = new DefaultDependableCoordinate();
         if (StringUtils.isBlank(template)) {
             throw new MojoFailureException("You must specify an template coordinate, "
@@ -115,7 +115,7 @@ public class GenerateMojo extends AbstractMojo {
             throw new MojoExecutionException("Couldn't resolve template artifact: " + e.getMessage(), e);
         }
 
-        // Collect template jar, dependency jars and transitive dependency jars
+        // Collect template resources, dependency jars and transitive dependency jars
         List<URL> classpath = new LinkedList<>();
         ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
         getLog().info("Resolving " + coordinate + " with transitive dependencies");

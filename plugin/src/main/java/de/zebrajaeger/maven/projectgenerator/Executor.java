@@ -1,6 +1,6 @@
 package de.zebrajaeger.maven.projectgenerator;
 
-import de.zebrajaeger.maven.projectgenerator.jar.ResourceManager;
+import de.zebrajaeger.maven.projectgenerator.resources.ResourceManager;
 import de.zebrajaeger.maven.projectgenerator.query.PrompterException;
 import de.zebrajaeger.maven.projectgenerator.query.Queryer;
 import org.apache.commons.lang3.StringUtils;

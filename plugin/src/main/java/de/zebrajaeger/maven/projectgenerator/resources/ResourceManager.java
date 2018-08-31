@@ -1,4 +1,4 @@
-package de.zebrajaeger.maven.projectgenerator.jar;
+package de.zebrajaeger.maven.projectgenerator.resources;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -15,7 +16,7 @@ import java.util.zip.ZipFile;
  * @author Lars Brandt, Silpion IT Solutions GmbH
  */
 public class ResourceManager {
-    private Node root = new Node(null);
+    private Node root = new Node();
 
     public void addSource(File file) throws IOException {
         ZipFile zipFile = new ZipFile(file);
@@ -36,6 +37,20 @@ public class ResourceManager {
                 root.add(path, new Resource(path.getLast(), content));
             }
         }
+    }
+
+    public Item getItem(ResourcePath path) {
+        return root.getItem(path);
+    }
+
+    public List<Item> getItems(ResourcePath path, boolean recursive) {
+        List<Item> result = new LinkedList<>();
+        Item item = root.getItem(path);
+        result.add(item);
+        if (item.getClass().equals(Node.class)) {
+            result.addAll(((Node) result).getItems(recursive));
+        }
+        return result;
     }
 
     @Override
