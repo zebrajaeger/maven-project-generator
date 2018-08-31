@@ -82,6 +82,13 @@
             <version>2.6</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.jtwig/jtwig-core -->
         <dependency>
             <groupId>org.jtwig</groupId>
@@ -90,11 +97,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.google.auto.service/auto-service -->
-        <dependency>
-            <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
-            <version>1.0-rc4</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.google.auto.service</groupId>-->
+            <!--<artifactId>auto-service</artifactId>-->
+            <!--<version>1.0-rc4</version>-->
+        <!--</dependency>-->
 
     </dependencies>
 
@@ -103,7 +110,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.5.2</version>
                 <configuration>
                     <!--<goalPrefix>maven-project-plugin</goalPrefix>-->
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>

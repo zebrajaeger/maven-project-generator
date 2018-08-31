@@ -45,7 +45,6 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -122,9 +121,7 @@ public class GenerateMojo extends AbstractMojo {
         getLog().info("Resolving " + coordinate + " with transitive dependencies");
         try {
             Iterable<ArtifactResult> artifactResults = dependencyResolver.resolveDependencies(buildingRequest, coordinate, null);
-            Iterator<ArtifactResult> iterator = artifactResults.iterator();
-            while (iterator.hasNext()) {
-                ArtifactResult artifactResult = iterator.next();
+            for (ArtifactResult artifactResult : artifactResults) {
                 System.out.println(artifactResult.getArtifact());
                 classpath.add(artifactResult.getArtifact().getFile().toURI().toURL());
             }
@@ -136,7 +133,7 @@ public class GenerateMojo extends AbstractMojo {
 
         try {
             // Start Executor into dedicated classloader with all the collected dependencies
-            URLClassLoader urlClassLoader = URLClassLoader.newInstance(classpath.toArray(new URL[classpath.size()]));
+            URLClassLoader urlClassLoader = URLClassLoader.newInstance(classpath.toArray(new URL[0]));
             Class<?> executorClazz = urlClassLoader.loadClass(Executor.class.getName());
             Object executor = executorClazz.newInstance();
             Method exec = executorClazz.getMethod("exec", String.class);
