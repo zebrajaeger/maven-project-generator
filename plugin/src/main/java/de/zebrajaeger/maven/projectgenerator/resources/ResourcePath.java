@@ -13,12 +13,30 @@ import java.util.List;
 public class ResourcePath {
     private LinkedList<String> path;
 
+    public static ResourcePath of(String... pathParts) {
+        return new ResourcePath(pathParts);
+    }
+
+    public static ResourcePath of(List<String> pathParts) {
+        return new ResourcePath(pathParts);
+    }
+
+    public static ResourcePath of(ResourcePath parent, String... pathParts) {
+        return new ResourcePath(parent, pathParts);
+    }
+
     public ResourcePath(List<String> pathParts) {
         this.path = new LinkedList<>(pathParts);
     }
 
     public ResourcePath(String... pathParts) {
         this.path = new LinkedList<>();
+        Arrays.stream(pathParts).forEach(item -> path.add(item));
+    }
+
+    public ResourcePath(ResourcePath parent, String... pathParts) {
+        this.path = new LinkedList<>();
+        this.path.addAll(parent.path);
         Arrays.stream(pathParts).forEach(item -> path.add(item));
     }
 
@@ -56,20 +74,24 @@ public class ResourcePath {
         return new ResourcePath(path.subList(0, path.size() - 2));
     }
 
+    public boolean isEmpty() {
+        return path.isEmpty();
+    }
+
     public ResourcePath removeParent(ResourcePath parent) {
-        if(path.size()<parent.getSize()){
+        if (path.size() < parent.getSize()) {
             throw new IllegalArgumentException(String.format("my path('%s') doesn't starts mit parentPath('%s')", this, parent));
         }
 
         LinkedList<String> newPath = new LinkedList<>(path);
         ArrayList<String> parentPath = new ArrayList<>(parent.path);
-        for (int i = 0; parentPath.size() < i; ++i) {
+        for (int i = 0; i < parentPath.size(); ++i) {
             if (!newPath.getFirst().equals(parentPath.get(i))) {
                 throw new IllegalArgumentException(String.format("my path('%s') doesn't starts mit parentPath('%s')", this, parent));
             }
         }
 
-        return new ResourcePath(newPath);
+        return new ResourcePath(newPath.subList(parent.getSize(), newPath.size() ));
     }
 
     @Override

@@ -26,6 +26,11 @@ public class Resource extends Item {
         return false;
     }
 
+    @Override
+    public boolean isRoot() {
+        return false;
+    }
+
     public byte[] getContent() {
         return content;
     }

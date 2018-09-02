@@ -1,10 +1,11 @@
 package de.zebrajaeger.maven.projectgenerator;
 
-import de.zebrajaeger.maven.projectgenerator.resources.ResourceManager;
 import de.zebrajaeger.maven.projectgenerator.query.PrompterException;
 import de.zebrajaeger.maven.projectgenerator.query.Queryer;
+import de.zebrajaeger.maven.projectgenerator.resources.ResourceManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
  */
 public class Executor {
     @SuppressWarnings("unused")
-    public void exec(String jarPath) throws MojoExecutionException {
+    public void exec(String jarPath) throws MojoExecutionException, MojoFailureException {
         System.out.println("PATH: " + jarPath);
 
         ResourceManager rm = new ResourceManager();
@@ -28,6 +29,7 @@ public class Executor {
             throw new MojoExecutionException("failed to loade template resources from '" + jarPath + "'", e);
         }
 
+        File workingDirectory = new File(System.getProperty("user.dir"));
         ServiceLoader<ProjectGenerator> services = ServiceLoader.load(ProjectGenerator.class, this.getClass().getClassLoader());
         for (ProjectGenerator g : services) {
             List<Property> properties = getProperties(g.getRequiredProperties());
@@ -36,7 +38,7 @@ public class Executor {
             } catch (PrompterException e) {
                 throw new MojoExecutionException("Prompter failed", e);
             }
-            g.generate(new ProjectContext(jarFile, properties, rm));
+            g.generate(new ProjectContext(workingDirectory,     jarFile, properties, rm));
         }
     }
 

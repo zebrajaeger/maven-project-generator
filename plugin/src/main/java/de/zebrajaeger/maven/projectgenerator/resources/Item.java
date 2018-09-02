@@ -21,11 +21,14 @@ public abstract class Item {
 
     public abstract boolean isNode();
 
+    public abstract boolean isRoot();
+
     public ResourcePath getPath() {
         LinkedList<String> path = new LinkedList<>();
         Item current = this;
-        while (current != null) {
+        while (current != null && !current.isRoot()) {
             path.addFirst(current.getName());
+            current = current.getParent();
         }
         return new ResourcePath(path);
     }

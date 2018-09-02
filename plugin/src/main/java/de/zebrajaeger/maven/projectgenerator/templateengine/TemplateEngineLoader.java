@@ -1,7 +1,5 @@
 package de.zebrajaeger.maven.projectgenerator.templateengine;
 
-import de.zebrajaeger.maven.projectgenerator.templateengine.impl.JtwigTemplateEngine;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +34,7 @@ public class TemplateEngineLoader {
         }
 
         for (TemplateEngine e : load) {
-            if (e.getName().equals(JtwigTemplateEngine.class.getName())) {
+            if (e.getName().equals(DefaultTemplateEngine.class.getName())) {
                 continue;
             }
             return e;

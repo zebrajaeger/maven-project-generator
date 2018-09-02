@@ -48,7 +48,7 @@ public class ResourceManager {
         Item item = root.getItem(path);
         result.add(item);
         if (item.getClass().equals(Node.class)) {
-            result.addAll(((Node) result).getItems(recursive));
+            result.addAll(((Node) item).getItems(recursive));
         }
         return result;
     }

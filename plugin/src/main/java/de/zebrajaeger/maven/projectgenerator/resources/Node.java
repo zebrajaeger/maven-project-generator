@@ -46,7 +46,9 @@ public class Node extends Item {
     }
 
     public Item getItem(ResourcePath path) {
-        if (path.getSize() == 1) {
+        if (path.getSize() == 0) {
+            return this;
+        } else if (path.getSize() == 1) {
             Resource resource = resources.get(path.getFirst());
             if (resource != null) {
                 return resource;
@@ -95,5 +97,10 @@ public class Node extends Item {
     @Override
     public boolean isNode() {
         return true;
+    }
+
+    @Override
+    public boolean isRoot() {
+        return getParent()==null;
     }
 }
