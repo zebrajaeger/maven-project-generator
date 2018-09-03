@@ -19,6 +19,7 @@
     <modules>
         <module>plugin</module>
         <module>test</module>
+        <module>opencms</module>
     </modules>
 
     <build>

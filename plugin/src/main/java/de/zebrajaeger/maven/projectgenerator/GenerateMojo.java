@@ -59,7 +59,7 @@ public class GenerateMojo extends AbstractMojo {
     @SuppressWarnings("unused")
     private ArchetypeGenerationConfigurator configurator;
 
-    @Parameter(property = "template", defaultValue = "de.zebrajaeger:project-generator-testproject:0.0.1-SNAPSHOT")
+    @Parameter(property = "template", defaultValue = "de.zebrajaeger:project-generator-opencms:0.0.1-SNAPSHOT")
     private String template;
 
     @Parameter(defaultValue = "${localRepository}", readonly = true, required = true)

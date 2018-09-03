@@ -33,6 +33,14 @@ public class ProjectContext {
     public List<Property> getProperties() {
         return properties;
     }
+    public Property getProperty(String name) {
+        for(Property p : properties){
+            if(p.getName().equals(name)){
+                return p;
+            }
+        }
+        return null;
+    }
 
     public ResourceManager getResources() {
         return resources;
