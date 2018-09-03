@@ -1,0 +1,41 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<export>
+    <info>
+        <creator>Admin</creator>
+        <opencms_version>10.5.4</opencms_version>
+        <createdate>${symbol_dollar}{createdate}</createdate>
+        <infoproject>Offline</infoproject>
+        <export_version>7</export_version>
+    </info>
+    <module>
+        <name>${rootArtifactId}.basis</name>
+        <nicename><![CDATA[Basis Modul]]></nicename>
+        <group>${rootArtifactId}</group>
+        <class>${rootArtifactId}.basis.ActionClass</class>
+        <description/>
+        <version>${symbol_dollar}{moduleversion}</version>
+        <authorname><![CDATA[]]></authorname>
+        <authoremail><![CDATA[]]></authoremail>
+        <datecreated/>
+        <userinstalled/>
+        <dateinstalled/>
+        <dependencies/>
+        <exportpoints>
+            <exportpoint uri="/system/modules/${rootArtifactId}.basis/lib/" destination="WEB-INF/lib/"/>
+            <exportpoint uri="/system/modules/${rootArtifactId}.basis/resources/META-INF/common.tld" destination="WEB-INF/common.tld"/>
+            <exportpoint uri="/system/modules/${rootArtifactId}.basis/resources/META-INF/tags/" destination="META-INF/tags/"/>
+        </exportpoints>
+        <resources>
+            <resource uri="/system/modules/${rootArtifactId}.basis/"/>
+        </resources>
+        <parameters/>
+        <resourcetypes>
+        </resourcetypes>
+        <explorertypes>
+        </explorertypes>
+    </module>
+    <files/>
+</export>

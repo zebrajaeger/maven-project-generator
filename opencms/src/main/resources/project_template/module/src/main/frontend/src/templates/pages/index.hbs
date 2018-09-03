@@ -1,0 +1,14 @@
+---
+page-title: FooBar
+headline :
+     title : Foobar Title
+---
+
+{{#extend "layouts/master" page}}
+    {{#content "content"}}
+        {{> components/page/esp}}
+        {{> components/page/headline page.headline}}
+        {{> components/page/carousel}}
+    {{/content}}
+{{/extend}}
+

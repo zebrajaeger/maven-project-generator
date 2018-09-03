@@ -1,0 +1,356 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>${groupId}</groupId>
+        <artifactId>${rootArtifactId}</artifactId>
+        <version>${version}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>${rootArtifactId}.${modulName}</artifactId>
+    <packaging>opencms-module</packaging>
+
+    <properties>
+        <root>${symbol_dollar}{project.basedir}/..</root>
+
+        <frontend.folder>src/main/frontend</frontend.folder>
+        <frontend.path>${symbol_dollar}{project.basedir}/${symbol_dollar}{frontend.folder}</frontend.path>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opencms</groupId>
+            <artifactId>opencms-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencms</groupId>
+            <artifactId>opencms-setup</artifactId>
+            <version>${symbol_dollar}{opencms-core.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opencms</groupId>
+            <artifactId>org.opencms.workplace</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencms</groupId>
+            <artifactId>org.opencms.workplace.tools.content</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencms</groupId>
+            <artifactId>org.opencms.workplace.tools.accounts</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencms</groupId>
+            <artifactId>org.opencms.workplace.tools.cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencms</groupId>
+            <artifactId>org.opencms.workplace.administration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencms</groupId>
+            <artifactId>org.opencms.workplace.tools.workplace</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>cryptix-jce</groupId>-->
+            <!--<artifactId>cryptix-jce-provider</artifactId>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>stringtemplate</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jsp-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <!-- create jar and zip file -->
+            <plugin>
+                <groupId>de.silpion.opencms.maven.plugins</groupId>
+                <artifactId>opencms-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <srcResources>
+                        <resource>
+                            <directory>${symbol_dollar}{project.build.directory}/dist/</directory>
+                            <targetPath>system/modules/${symbol_dollar}{project.artifactId}/resources</targetPath>
+                        </resource>
+                        <!--<resource>-->
+                            <!--<directory>${symbol_dollar}{project.build.directory}/static-frontend/</directory>-->
+                            <!--<targetPath>system/modules/${symbol_dollar}{project.artifactId}/resources/static-frontend</targetPath>-->
+                        <!--</resource>-->
+                    </srcResources>
+                </configuration>
+            </plugin>
+
+            <!-- code validation, tests etc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <!-- remove when no more errors :) -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>cpd</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- clean all generated frontend folders (node, node_modules etc)-->
+        <profile>
+            <id>frontend-clean</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${symbol_dollar}{project.basedir}</directory>
+                                    <includes>
+                                        <include>${symbol_dollar}{frontend.folder}/node_modules/</include>
+                                        <include>${symbol_dollar}{frontend.folder}/node/</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- build frontend  except -Dskip-frontend is given -->
+        <profile>
+            <id>frontend-build</id>
+            <activation>
+                <property>
+                    <name>!skip-frontend</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.gmaven</groupId>
+                        <artifactId>groovy-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>change skips(initialize)</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <source>
+                                        import java.nio.file.*
+
+                                        String skip = Files.exists(
+                                                Paths.get(project.basedir.toString() + "/" + properties['frontend.folder'],
+                                                        'node')).toString()
+                                        project.properties['skip.frontendinstallation'] = skip
+                                        println '** Skip Install NodeJs(1): ' + skip
+                                    </source>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.6</version>
+                        <configuration>
+                            <installDirectory>${symbol_dollar}{frontend.path}</installDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>frontend install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <nodeVersion>v8.9.4</nodeVersion>
+                                    <npmVersion>5.6.0</npmVersion>
+                                    <skip>${symbol_dollar}{skip.frontendinstallation}</skip>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                    <workingDirectory>${symbol_dollar}{frontend.path}</workingDirectory>
+                                    <skip>${symbol_dollar}{skip.frontendinstallation}</skip>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>frontend npm build</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>compile</phase>
+                                <configuration>
+                                    <arguments>run build</arguments>
+                                    <workingDirectory>${symbol_dollar}{frontend.path}</workingDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- build frontend  except -Dskip-git is given -->
+        <profile>
+            <id>git-project-info</id>
+            <activation>
+                <property>
+                    <name>!skip-git</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>pl.project13.maven</groupId>
+                        <artifactId>git-commit-id-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- import module into OpenCms -->
+        <profile>
+            <id>develop</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>de.silpion.opencms.maven.plugins</groupId>
+                        <artifactId>opencms-cmsshell-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

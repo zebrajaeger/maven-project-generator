@@ -1,0 +1,24 @@
+{
+  "type": "opencms",
+  "title": "Kampagnen",
+  "alias": "Kampagnen",
+  "description": "",
+  "version": "1.0",
+  "created": "2018-03-19T09:00:00+02:00",
+  "paths": {
+    "env": "../../../target/",
+    "src": "src/",
+    "tmp": ".tmp/",
+    "tasks": "gulp/"
+  },
+  "autoprefixer": {
+    "browsers": ["> 2%", "IE >= 10", "iOS >= 8"],
+    "cascade": false,
+    "map": true,
+    "remove": true
+  },
+  "sass": {
+    "errLogToConsole": true,
+    "outputStyle": "expanded"
+  }
+}

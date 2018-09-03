@@ -1,0 +1,23 @@
+<link rel="stylesheet" href=".{{ cssx }}/vendor.css?v={{ timestamp }}" type="text/css">
+<link rel="stylesheet" href=".{{ cssx }}/app.css?v={{ timestamp }}" type="text/css">
+<script>
+    var vendorReady = false;
+    var appReady = false;
+    function checkReady() {
+        if (vendorReady && appReady && initApp) {
+            initApp();
+        }
+    }
+    function onVendorReady() {
+        console.log("onVendorReady()");
+        vendorReady = true;
+        checkReady();
+    }
+    function onAppReady() {
+        console.log("onAppReady()");
+        appReady = true;
+        checkReady();
+    }
+</script>
+<script src=".{{ jsx }}/vendor.js?v={{ timestamp }}" async type="application/javascript"></script>
+<script src=".{{ jsx }}/app.js?v={{ timestamp }}"  async type="application/javascript"></script>
