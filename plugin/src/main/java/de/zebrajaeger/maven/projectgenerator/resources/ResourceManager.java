@@ -1,5 +1,9 @@
 package de.zebrajaeger.maven.projectgenerator.resources;
 
+import de.zebrajaeger.maven.projectgenerator.resources.model.Item;
+import de.zebrajaeger.maven.projectgenerator.resources.model.Node;
+import de.zebrajaeger.maven.projectgenerator.resources.model.Resource;
+import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;

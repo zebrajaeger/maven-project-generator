@@ -4,17 +4,20 @@ import com.google.auto.service.AutoService;
 import de.zebrajaeger.maven.projectgenerator.ProjectContext;
 import de.zebrajaeger.maven.projectgenerator.ProjectGenerator;
 import de.zebrajaeger.maven.projectgenerator.RequiredProperty;
+import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
 import de.zebrajaeger.maven.projectgenerator.templateengine.DefaultTemplateProcessor;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateContext;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateEngineException;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateProcessor;
 import de.zebrajaeger.maven.projectgenerator.utils.Coordinate;
+import de.zebrajaeger.maven.projectgenerator.utils.CopyTask;
 import de.zebrajaeger.maven.projectgenerator.utils.RandomUUID;
 import de.zebrajaeger.maven.projectgenerator.utils.ResourceUtils;
 import de.zebrajaeger.maven.projectgenerator.utils.StringList;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +26,10 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class OpenCmsProjectGenerator implements ProjectGenerator {
 
+    public static final String PROJECT_TEMPLATE = "project_template";
     public static final String PROJECT_COORDINATE = "projectCoordinate";
     public static final String MODULES = "modules";
+
 
     @Override
     public void generate(ProjectContext context) throws MojoExecutionException, MojoFailureException {
@@ -34,29 +39,45 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
 
         TemplateProcessor templateProcessor = DefaultTemplateProcessor.of();
         TemplateContext templateContext = templateProcessor.getTemplateContext();
+
+        // utils
         templateContext.put("randomUUID", new RandomUUID());
+        templateContext.put("UUID", new RandomUUID());
+
+        // common stuff
         templateContext.put("coordinate", coordinate);
         templateContext.put("groupId", coordinate.getGroupId());
-        templateContext.put("artifactId", coordinate.getArtifactId());
         templateContext.put("version", coordinate.getVersion());
-        templateContext.put("rootArtifactId", "???");
 
         templateContext.put("modules", modules);
 
-        ResourceUtils resourceUtils = new ResourceUtils(context.getResources());
-
-        // TODO root stuff
         try {
-            resourceUtils.copy(ResourceUtils.PROJECT_TEMPLATE, context.getWorkingDirectory(), templateProcessor, true);
+            // root
+            templateContext.put("artifactId", coordinate.getArtifactId() + ".parent");
+            templateContext.put("rootArtifactId", coordinate.getArtifactId() + ".parent");
+            CopyTask.of(
+                    context.getResources(),
+                    ResourcePath.of(PROJECT_TEMPLATE, "root"),
+                    context.getWorkingDirectory())
+                    .copy();
+
+            // modules
+            for (String moduleName : modules) {
+                templateContext.put("module", moduleName);
+                templateContext.put("artifactId", coordinate.getArtifactId() + "." + moduleName);
+                templateContext.put("package", coordinate.getArtifactId() + "." + moduleName);
+
+                File moduleRoot = new File(context.getWorkingDirectory(), moduleName);
+                moduleRoot.mkdirs();
+
+                CopyTask.of(
+                        context.getResources(),
+                        ResourcePath.of(PROJECT_TEMPLATE, "module"),
+                        context.getWorkingDirectory())
+                        .copy();
+            }
         } catch (IOException | TemplateEngineException e) {
             throw new MojoExecutionException("Can not copy resources to '" + context.getWorkingDirectory().getAbsolutePath() + "'", e);
-        }
-
-        for(String moduleName : modules){
-            templateContext.put("module", moduleName);
-            templateContext.put("package", coordinate.getArtifactId() + "." + moduleName);
-
-            // TODO module stuff
         }
     }
 

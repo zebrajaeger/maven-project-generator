@@ -1,9 +1,10 @@
-package de.zebrajaeger.maven.projectgenerator.resources;
+package de.zebrajaeger.maven.projectgenerator.resources.path;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,6 +39,16 @@ public class ResourcePath {
         this.path = new LinkedList<>();
         this.path.addAll(parent.path);
         Arrays.stream(pathParts).forEach(item -> path.add(item));
+    }
+
+    public ResourcePath addTail(String... pathParts) {
+        return ResourcePath.of(this, pathParts);
+    }
+
+    public ResourcePath addHead(String... pathParts) {
+        ResourcePath result = new ResourcePath(this);
+        result.path.addAll(0, Arrays.asList(pathParts));
+        return result;
     }
 
     public int getSize() {
@@ -78,6 +89,10 @@ public class ResourcePath {
         return path.isEmpty();
     }
 
+    public List<String> getPathParts(){
+        return Collections.unmodifiableList(path);
+    }
+
     public ResourcePath removeParent(ResourcePath parent) {
         if (path.size() < parent.getSize()) {
             throw new IllegalArgumentException(String.format("my path('%s') doesn't starts mit parentPath('%s')", this, parent));
@@ -91,7 +106,7 @@ public class ResourcePath {
             }
         }
 
-        return new ResourcePath(newPath.subList(parent.getSize(), newPath.size() ));
+        return new ResourcePath(newPath.subList(parent.getSize(), newPath.size()));
     }
 
     @Override

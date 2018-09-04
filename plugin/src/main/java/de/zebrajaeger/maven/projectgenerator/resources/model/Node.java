@@ -1,4 +1,6 @@
-package de.zebrajaeger.maven.projectgenerator.resources;
+package de.zebrajaeger.maven.projectgenerator.resources.model;
+
+import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,7 +14,7 @@ public class Node extends Item {
     private Map<String, Resource> resources = new HashMap<>();
     private Map<String, Node> nodes = new HashMap<>();
 
-    protected Node() {
+    public Node() {
         super(null, null);
     }
 

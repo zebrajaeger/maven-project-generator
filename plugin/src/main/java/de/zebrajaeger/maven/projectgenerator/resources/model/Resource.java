@@ -1,4 +1,4 @@
-package de.zebrajaeger.maven.projectgenerator.resources;
+package de.zebrajaeger.maven.projectgenerator.resources.model;
 
 /**
  * @author Lars Brandt, Silpion IT Solutions GmbH

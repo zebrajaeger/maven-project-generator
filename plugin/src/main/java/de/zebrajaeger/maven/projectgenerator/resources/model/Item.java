@@ -1,5 +1,6 @@
-package de.zebrajaeger.maven.projectgenerator.resources;
+package de.zebrajaeger.maven.projectgenerator.resources.model;
 
+import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 

@@ -1,4 +1,4 @@
-package de.zebrajaeger.maven.projectgenerator.resources;
+package de.zebrajaeger.maven.projectgenerator.resources.path;
 
 import java.util.function.Function;
 
