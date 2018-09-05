@@ -1,9 +1,9 @@
 package de.zebrajaeger.maven.projectgenerator.opencms;
 
 import com.google.auto.service.AutoService;
-import de.zebrajaeger.maven.projectgenerator.ProjectContext;
-import de.zebrajaeger.maven.projectgenerator.ProjectGenerator;
-import de.zebrajaeger.maven.projectgenerator.RequiredProperty;
+import de.zebrajaeger.maven.projectgenerator.project.ProjectContext;
+import de.zebrajaeger.maven.projectgenerator.project.ProjectGenerator;
+import de.zebrajaeger.maven.projectgenerator.project.RequiredProperty;
 import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
 import de.zebrajaeger.maven.projectgenerator.templateengine.DefaultTemplateProcessor;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateContext;
@@ -12,7 +12,6 @@ import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateProcessor;
 import de.zebrajaeger.maven.projectgenerator.utils.Coordinate;
 import de.zebrajaeger.maven.projectgenerator.utils.CopyTask;
 import de.zebrajaeger.maven.projectgenerator.utils.RandomUUID;
-import de.zebrajaeger.maven.projectgenerator.utils.ResourceUtils;
 import de.zebrajaeger.maven.projectgenerator.utils.StringList;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -22,7 +21,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-@AutoService(de.zebrajaeger.maven.projectgenerator.ProjectGenerator.class)
+@AutoService(ProjectGenerator.class)
 @SuppressWarnings("unused")
 public class OpenCmsProjectGenerator implements ProjectGenerator {
 
@@ -30,9 +29,9 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
     public static final String PROJECT_COORDINATE = "projectCoordinate";
     public static final String MODULES = "modules";
 
-
     @Override
     public void generate(ProjectContext context) throws MojoExecutionException, MojoFailureException {
+
         String projectCoordinate = context.getProperty(PROJECT_COORDINATE).getValue();
         Coordinate coordinate = Coordinate.of(projectCoordinate);
         StringList modules = StringList.of(context.getProperty(MODULES).getValue());
@@ -59,6 +58,8 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
                     context.getResources(),
                     ResourcePath.of(PROJECT_TEMPLATE, "root"),
                     context.getWorkingDirectory())
+                    .templateProcessor(templateProcessor)
+                    .recursive()
                     .copy();
 
             // modules
@@ -73,7 +74,8 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
                 CopyTask.of(
                         context.getResources(),
                         ResourcePath.of(PROJECT_TEMPLATE, "module"),
-                        context.getWorkingDirectory())
+                        new File(context.getWorkingDirectory(), moduleName))
+                        .recursive()
                         .copy();
             }
         } catch (IOException | TemplateEngineException e) {

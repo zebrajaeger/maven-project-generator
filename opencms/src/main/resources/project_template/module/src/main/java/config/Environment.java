@@ -6,7 +6,7 @@ import java.util.Locale;
 
 /**
  * <h3>Staging</h3> To configure the staging set the system property with key: {@link #STAGING_KEY}
- * and a value from {@link ${package}.config.Environment.Staging}. <p/> e.g. <code>export
+ * and a value from {@link ${package}.config.Environment.Staging}. <p/> e.LoggingUtils. <code>export
  * JAVA_OPTS="-Dstaging=TEST"</code>
  *
  * @author brandt

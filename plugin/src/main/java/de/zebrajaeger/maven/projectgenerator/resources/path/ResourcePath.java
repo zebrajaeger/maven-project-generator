@@ -74,7 +74,7 @@ public class ResourcePath {
             return this;
         }
 
-        return new ResourcePath(path.subList(1, path.size() - 1));
+        return new ResourcePath(path.subList(1, path.size()));
     }
 
     public ResourcePath withoutLast() {
@@ -104,9 +104,10 @@ public class ResourcePath {
             if (!newPath.getFirst().equals(parentPath.get(i))) {
                 throw new IllegalArgumentException(String.format("my path('%s') doesn't starts mit parentPath('%s')", this, parent));
             }
+            newPath.removeFirst();
         }
 
-        return new ResourcePath(newPath.subList(parent.getSize(), newPath.size()));
+        return new ResourcePath(newPath);
     }
 
     @Override

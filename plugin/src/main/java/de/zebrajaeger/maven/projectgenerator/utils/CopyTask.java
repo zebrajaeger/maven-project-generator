@@ -53,6 +53,15 @@ public class CopyTask {
         return this;
     }
 
+    public CopyTask recursive(boolean isRecursive) {
+        recursive = isRecursive;
+        return this;
+    }
+
+    public CopyTask recursive() {
+        return recursive(true);
+    }
+
     public void copy() throws TemplateEngineException, IOException {
         List<Item> items = resourceManager.getItems(from, recursive);
         for (Item i : items) {
@@ -80,7 +89,7 @@ public class CopyTask {
 
     private ResourcePath transformPath(ResourcePath resourcePath) {
         ResourcePath targetPath = resourcePath;
-        for(RecourcePathTransformer t : resourcePathTransformers){
+        for (RecourcePathTransformer t : resourcePathTransformers) {
             targetPath = t.apply(targetPath);
         }
         return targetPath;
@@ -88,13 +97,13 @@ public class CopyTask {
 
     private boolean acceptItem(Item i) {
         boolean accept = true;
-        for(ResourceFilter f : filters){
+        for (ResourceFilter f : filters) {
             Boolean a = f.accept(i);
-            if(a==Boolean.TRUE){
+            if (a == Boolean.TRUE) {
                 accept = true;
                 break;
             }
-            if(a==Boolean.FALSE){
+            if (a == Boolean.FALSE) {
                 accept = false;
                 break;
             }

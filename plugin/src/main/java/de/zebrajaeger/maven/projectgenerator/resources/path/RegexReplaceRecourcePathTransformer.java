@@ -11,12 +11,20 @@ public class RegexReplaceRecourcePathTransformer implements ResourcePathTransfor
     private Pattern regex;
     private String replacement;
 
-    public RegexReplaceRecourcePathTransformer(String regex, String replacement) {
+    public static RegexReplaceRecourcePathTransformer of(String regex, String replacement) {
+        return new RegexReplaceRecourcePathTransformer(regex, replacement);
+    }
+
+    public static RegexReplaceRecourcePathTransformer of(Pattern regex, String replacement) {
+        return new RegexReplaceRecourcePathTransformer(regex, replacement);
+    }
+
+    private RegexReplaceRecourcePathTransformer(String regex, String replacement) {
         this.regex = Pattern.compile(regex);
         this.replacement = replacement;
     }
 
-    public RegexReplaceRecourcePathTransformer(Pattern regex, String replacement) {
+    private RegexReplaceRecourcePathTransformer(Pattern regex, String replacement) {
         this.regex = regex;
         this.replacement = replacement;
     }

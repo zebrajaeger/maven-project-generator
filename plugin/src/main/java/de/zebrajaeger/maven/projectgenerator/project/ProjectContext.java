@@ -1,4 +1,4 @@
-package de.zebrajaeger.maven.projectgenerator;
+package de.zebrajaeger.maven.projectgenerator.project;
 
 import de.zebrajaeger.maven.projectgenerator.resources.ResourceManager;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;

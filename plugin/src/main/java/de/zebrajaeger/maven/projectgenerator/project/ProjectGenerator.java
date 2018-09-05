@@ -1,4 +1,4 @@
-package de.zebrajaeger.maven.projectgenerator;
+package de.zebrajaeger.maven.projectgenerator.project;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;

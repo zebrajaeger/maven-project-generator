@@ -1,6 +1,4 @@
-package de.zebrajaeger.maven.projectgenerator;
-
-import de.zebrajaeger.maven.projectgenerator.RequiredProperty;
+package de.zebrajaeger.maven.projectgenerator.project;
 
 /**
  * @author Lars Brandt, Silpion IT Solutions GmbH

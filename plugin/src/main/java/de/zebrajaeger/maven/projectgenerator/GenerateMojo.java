@@ -16,6 +16,8 @@ package de.zebrajaeger.maven.projectgenerator;
  * limitations under the License.
  */
 
+import de.zebrajaeger.maven.projectgenerator.project.Executor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.archetype.ui.generation.ArchetypeGenerationConfigurator;
 import org.apache.maven.artifact.Artifact;
@@ -77,6 +79,9 @@ public class GenerateMojo extends AbstractMojo {
     @SuppressWarnings("unused")
     private MavenSession session;
 
+    @Parameter(property = "interactiveMode", defaultValue = "${settings.interactiveMode}", required = true)
+    private Boolean interactiveMode;
+
     @Component
     @SuppressWarnings("unused")
     private ArtifactResolver artifactResolver;
@@ -86,11 +91,48 @@ public class GenerateMojo extends AbstractMojo {
     private DependencyResolver dependencyResolver;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        // Coordinate of Project Template resources
+        DefaultDependableCoordinate templateCoordinate = readCoordinate();
+        File projectJarFile = findProjectJar(templateCoordinate);
+        List<URL> classpath = createClasspath(templateCoordinate);
+        startExecutor(projectJarFile, classpath);
+    }
+
+    private void startExecutor(File projectJarFile, List<URL> classpath) throws MojoExecutionException {
+        try {
+            // Start Executor into dedicated classloader with all the collected dependencies
+            URLClassLoader urlClassLoader = URLClassLoader.newInstance(classpath.toArray(new URL[0]));
+            Class<?> executorClazz = urlClassLoader.loadClass(Executor.class.getName());
+            Object executor = executorClazz.newInstance();
+            Method exec = executorClazz.getMethod("exec", String.class, boolean.class);
+            exec.invoke(executor, projectJarFile.getAbsolutePath(), BooleanUtils.isTrue(interactiveMode));
+        } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
+            throw new MojoExecutionException("Couldn't start executor: " + e.getMessage(), e);
+        }
+    }
+
+    private List<URL> createClasspath(DefaultDependableCoordinate templateCoordinate) throws MojoExecutionException {
+        List<URL> classpath = new LinkedList<>();
+        ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
+        getLog().info("Resolving " + templateCoordinate + " with transitive dependencies");
+        try {
+            Iterable<ArtifactResult> artifactResults = dependencyResolver.resolveDependencies(buildingRequest, templateCoordinate, null);
+            for (ArtifactResult artifactResult : artifactResults) {
+                System.out.println(artifactResult.getArtifact());
+                classpath.add(artifactResult.getArtifact().getFile().toURI().toURL());
+            }
+        } catch (DependencyResolverException e) {
+            throw new MojoExecutionException("Couldn't download artifact: " + e.getMessage(), e);
+        } catch (MalformedURLException e) {
+            throw new MojoExecutionException("Couldn't get URI of artifact: " + e.getMessage(), e);
+        }
+        return classpath;
+    }
+
+    private DefaultDependableCoordinate readCoordinate() throws MojoFailureException {
         DefaultDependableCoordinate coordinate = new DefaultDependableCoordinate();
-        if (StringUtils.isBlank(template)) {
+        if (StringUtils.isBlank(template) && !interactiveMode) {
             throw new MojoFailureException("You must specify an template coordinate, "
-                    + "e.g. -Dtemplate=de.zebrajaeger:project-generator-testproject:0.0.1-SNAPSHOT");
+                    + "e.LoggingUtils. -Dtemplate=de.zebrajaeger:project-generator-testproject:0.0.1-SNAPSHOT");
         }
 
         String[] tokens = template.split(":");
@@ -107,59 +149,28 @@ public class GenerateMojo extends AbstractMojo {
         if (tokens.length == 5) {
             coordinate.setClassifier(tokens[4]);
         }
+        return coordinate;
+    }
 
-        File file;
+    private File findProjectJar(DefaultDependableCoordinate templateCoordinate) throws MojoExecutionException {
         try {
-            file = findProjectJar(coordinate);
+            DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
+            coordinate.setGroupId(templateCoordinate.getGroupId());
+            coordinate.setArtifactId(templateCoordinate.getArtifactId());
+            coordinate.setVersion(templateCoordinate.getVersion());
+            coordinate.setExtension(templateCoordinate.getType());
+            coordinate.setClassifier(templateCoordinate.getClassifier());
+
+            DefaultProjectBuildingRequest projectBuildingRequest = new DefaultProjectBuildingRequest();
+            projectBuildingRequest.setLocalRepository(localRepository);
+            projectBuildingRequest.setRemoteRepositories(remoteArtifactRepositories);
+            projectBuildingRequest.setRepositorySession(repoSession);
+
+            ArtifactResult artifactResult = artifactResolver.resolveArtifact(projectBuildingRequest, coordinate);
+            Artifact artifact = artifactResult.getArtifact();
+            return artifact.getFile();
         } catch (ArtifactResolverException e) {
             throw new MojoExecutionException("Couldn't resolve template artifact: " + e.getMessage(), e);
         }
-
-        // Collect template resources, dependency jars and transitive dependency jars
-        List<URL> classpath = new LinkedList<>();
-        ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
-        getLog().info("Resolving " + coordinate + " with transitive dependencies");
-        try {
-            Iterable<ArtifactResult> artifactResults = dependencyResolver.resolveDependencies(buildingRequest, coordinate, null);
-            for (ArtifactResult artifactResult : artifactResults) {
-                System.out.println(artifactResult.getArtifact());
-                classpath.add(artifactResult.getArtifact().getFile().toURI().toURL());
-            }
-        } catch (DependencyResolverException e) {
-            throw new MojoExecutionException("Couldn't download artifact: " + e.getMessage(), e);
-        } catch (MalformedURLException e) {
-            throw new MojoExecutionException("Couldn't get URI of artifact: " + e.getMessage(), e);
-        }
-
-        try {
-            // Start Executor into dedicated classloader with all the collected dependencies
-            URLClassLoader urlClassLoader = URLClassLoader.newInstance(classpath.toArray(new URL[0]));
-            Class<?> executorClazz = urlClassLoader.loadClass(Executor.class.getName());
-            Object executor = executorClazz.newInstance();
-            Method exec = executorClazz.getMethod("exec", String.class);
-            exec.invoke(executor, file.getAbsolutePath());
-
-            System.out.println("YO!!!" + file.getAbsolutePath());
-        } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
-            throw new MojoExecutionException("Couldn't start executor: " + e.getMessage(), e);
-        }
-    }
-
-    private File findProjectJar(DefaultDependableCoordinate templateCoordinate) throws ArtifactResolverException {
-        DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
-        coordinate.setGroupId(templateCoordinate.getGroupId());
-        coordinate.setArtifactId(templateCoordinate.getArtifactId());
-        coordinate.setVersion(templateCoordinate.getVersion());
-        coordinate.setExtension(templateCoordinate.getType());
-        coordinate.setClassifier(templateCoordinate.getClassifier());
-
-        DefaultProjectBuildingRequest projectBuildingRequest = new DefaultProjectBuildingRequest();
-        projectBuildingRequest.setLocalRepository(localRepository);
-        projectBuildingRequest.setRemoteRepositories(remoteArtifactRepositories);
-        projectBuildingRequest.setRepositorySession(repoSession);
-
-        ArtifactResult artifactResult = artifactResolver.resolveArtifact(projectBuildingRequest, coordinate);
-        Artifact artifact = artifactResult.getArtifact();
-        return artifact.getFile();
     }
 }

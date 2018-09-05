@@ -1,4 +1,4 @@
-package de.zebrajaeger.maven.projectgenerator;
+package de.zebrajaeger.maven.projectgenerator.project;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;

@@ -48,6 +48,8 @@ public abstract class Item {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        ReflectionToStringBuilder b = new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE, null, null, false, false);
+        b.setExcludeFieldNames("content","parent");
+        return b.toString();
     }
 }

@@ -35,7 +35,7 @@ public class ResourceManager {
                 }
             }
             if (entry.isDirectory()) {
-                root.add(path, new Node(path.get(0)));
+                root.add(path, new Node(path.getLast()));
             } else {
                 byte[] content = IOUtils.toByteArray(zipFile.getInputStream(entry));
                 root.add(path, new Resource(path.getLast(), content));

@@ -1,9 +1,9 @@
 package de.zebrajaeger.maven.projectgenerator.testproject;
 
 import com.google.auto.service.AutoService;
-import de.zebrajaeger.maven.projectgenerator.ProjectContext;
-import de.zebrajaeger.maven.projectgenerator.ProjectGenerator;
-import de.zebrajaeger.maven.projectgenerator.RequiredProperty;
+import de.zebrajaeger.maven.projectgenerator.project.ProjectContext;
+import de.zebrajaeger.maven.projectgenerator.project.ProjectGenerator;
+import de.zebrajaeger.maven.projectgenerator.project.RequiredProperty;
 import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
 import de.zebrajaeger.maven.projectgenerator.templateengine.DefaultTemplateProcessor;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateEngineException;
@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-@AutoService(de.zebrajaeger.maven.projectgenerator.ProjectGenerator.class)
+@AutoService(ProjectGenerator.class)
 @SuppressWarnings("unused")
 public class TestProjectGenerator implements ProjectGenerator {
 
