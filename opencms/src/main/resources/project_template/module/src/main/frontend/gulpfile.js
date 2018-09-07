@@ -1,6 +1,3 @@
-#set( $symbol_pound = '#' )
-#set( $symbol_dollar = '$' )
-#set( $symbol_escape = '\' )
 'use strict';
 
 /*
@@ -114,7 +111,7 @@ gulp.task('serve', ['build'], function () {
         proxy: "localhost:8080",
         serveStatic: [
             {dir: '../../../target/build'},
-            {dir: '../../../target/build', route: '/system/modules/${rootArtifactId}.basis/resources'}
+            {dir: '../../../target/build', route: '/system/modules/${rootArtifactId}.{{rootArtifactId}}.{{moduleName}}/resources'}
         ],
         ui: {
             port: 3001

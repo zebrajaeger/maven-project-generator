@@ -4,15 +4,19 @@ import com.google.auto.service.AutoService;
 import de.zebrajaeger.maven.projectgenerator.project.ProjectContext;
 import de.zebrajaeger.maven.projectgenerator.project.ProjectGenerator;
 import de.zebrajaeger.maven.projectgenerator.project.RequiredProperty;
+import de.zebrajaeger.maven.projectgenerator.resources.model.FileExtensionResourceFilter;
+import de.zebrajaeger.maven.projectgenerator.resources.model.FilterChain;
+import de.zebrajaeger.maven.projectgenerator.resources.path.PackagePathTrandformer;
 import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
+import de.zebrajaeger.maven.projectgenerator.resources.path.StringReplacerPathTransformer;
 import de.zebrajaeger.maven.projectgenerator.templateengine.DefaultTemplateProcessor;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateContext;
-import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateEngineException;
-import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateProcessor;
 import de.zebrajaeger.maven.projectgenerator.utils.Coordinate;
 import de.zebrajaeger.maven.projectgenerator.utils.CopyTask;
 import de.zebrajaeger.maven.projectgenerator.utils.RandomUUID;
 import de.zebrajaeger.maven.projectgenerator.utils.StringList;
+import de.zebrajaeger.maven.projectgenerator.utils.stringreplacer.DefaultReplacementDictionary;
+import de.zebrajaeger.maven.projectgenerator.utils.stringreplacer.StringReplacer;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -36,8 +40,7 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
         Coordinate coordinate = Coordinate.of(projectCoordinate);
         StringList modules = StringList.of(context.getProperty(MODULES).getValue());
 
-        TemplateProcessor templateProcessor = DefaultTemplateProcessor.of();
-        TemplateContext templateContext = templateProcessor.getTemplateContext();
+        TemplateContext templateContext = TemplateContext.of();
 
         // utils
         templateContext.put("randomUUID", new RandomUUID());
@@ -58,7 +61,7 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
                     context.getResources(),
                     ResourcePath.of(PROJECT_TEMPLATE, "root"),
                     context.getWorkingDirectory())
-                    .templateProcessor(templateProcessor)
+                    .templateProcessor(DefaultTemplateProcessor.of(templateContext))
                     .recursive()
                     .copy();
 
@@ -71,14 +74,27 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
                 File moduleRoot = new File(context.getWorkingDirectory(), moduleName);
                 moduleRoot.mkdirs();
 
-                CopyTask.of(
-                        context.getResources(),
-                        ResourcePath.of(PROJECT_TEMPLATE, "module"),
-                        new File(context.getWorkingDirectory(), moduleName))
+                CopyTask.of(context.getResources(), ResourcePath.of(PROJECT_TEMPLATE, "module"), moduleRoot)
                         .recursive()
+                        .pathTransformer(
+                                PackagePathTrandformer.of(
+                                        coordinate.getArtifactId()))
+                        .pathTransformer(
+                                StringReplacerPathTransformer.of(
+                                        StringReplacer.of(
+                                                DefaultReplacementDictionary.of(
+                                                        templateContext.getContext()))))
+                        .templateProcessor(
+                                FilterChain.of(
+                                        false,
+                                        FileExtensionResourceFilter.of(
+                                                true,
+                                                "java", "xml")),
+                                DefaultTemplateProcessor.of(
+                                        templateContext))
                         .copy();
             }
-        } catch (IOException | TemplateEngineException e) {
+        } catch (IOException e) {
             throw new MojoExecutionException("Can not copy resources to '" + context.getWorkingDirectory().getAbsolutePath() + "'", e);
         }
     }
@@ -87,8 +103,8 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
     public List<RequiredProperty> getRequiredProperties() {
         List<RequiredProperty> result = new LinkedList<>();
 
-        result.add(new RequiredProperty("projectCoordinate", "com.test:testproject:0.0.1-SNAPSHOT"));
-        result.add(new RequiredProperty("modules", "basis"));
+        result.add(new RequiredProperty("projectCoordinate", "com.test:com.testproject:0.0.1-SNAPSHOT"));
+        result.add(new RequiredProperty("modules", "base"));
 
         return result;
     }

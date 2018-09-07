@@ -1,12 +1,9 @@
-#set( $symbol_pound = '#' )
-#set( $symbol_dollar = '$' )
-#set( $symbol_escape = '\' )
 <?xml version="1.0" encoding="UTF-8"?>
 <export>
     <info>
         <creator>Admin</creator>
         <opencms_version>10.5.4</opencms_version>
-        <createdate>${symbol_dollar}{createdate}</createdate>
+        <createdate>${createdate}</createdate>
         <infoproject>Offline</infoproject>
         <export_version>7</export_version>
     </info>
@@ -16,7 +13,7 @@
         <group>${rootArtifactId}</group>
         <class>${rootArtifactId}.basis.ActionClass</class>
         <description/>
-        <version>${symbol_dollar}{moduleversion}</version>
+        <version>${moduleversion}</version>
         <authorname><![CDATA[]]></authorname>
         <authoremail><![CDATA[]]></authoremail>
         <datecreated/>

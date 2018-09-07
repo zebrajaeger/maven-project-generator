@@ -9,7 +9,17 @@ import java.util.Map;
  * @author Lars Brandt, Silpion IT Solutions GmbH
  */
 public class TemplateContext {
-    private Map<String,Object> context = new HashMap<>();
+    private Map<String, Object> context = new HashMap<>();
+
+    public static TemplateContext of() {
+        return new TemplateContext();
+    }
+
+    public static TemplateContext of(Map<String, Object> value) {
+        TemplateContext result = new TemplateContext();
+        result.putAll(value);
+        return result;
+    }
 
     public Object get(Object key) {
         return context.get(key);

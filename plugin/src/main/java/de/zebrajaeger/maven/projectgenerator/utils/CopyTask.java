@@ -1,10 +1,11 @@
 package de.zebrajaeger.maven.projectgenerator.utils;
 
+import com.github.jknack.handlebars.HandlebarsException;
 import de.zebrajaeger.maven.projectgenerator.resources.ResourceManager;
+import de.zebrajaeger.maven.projectgenerator.resources.model.FilterChain;
 import de.zebrajaeger.maven.projectgenerator.resources.model.Item;
 import de.zebrajaeger.maven.projectgenerator.resources.model.Resource;
-import de.zebrajaeger.maven.projectgenerator.resources.model.ResourceFilter;
-import de.zebrajaeger.maven.projectgenerator.resources.path.RecourcePathTransformer;
+import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePathTransformer;
 import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateEngineException;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateProcessor;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Lars Brandt, Silpion IT Solutions GmbH
@@ -24,9 +26,9 @@ public class CopyTask {
     private ResourcePath from;
     private File to;
     private boolean recursive = false;
-    private List<RecourcePathTransformer> resourcePathTransformers = new LinkedList<>();
-    private List<ResourceFilter> filters = new LinkedList<>();
-    private TemplateProcessor templateProcessor;
+    private List<ResourcePathTransformer> resourcePathTransformers = new LinkedList<>();
+    private FilterChain filter = FilterChain.of(true);
+    private List<ResourceProcessor> resourceProcessors = new LinkedList<>();
 
     public static CopyTask of(ResourceManager resourceManager, ResourcePath from, File to) {
         return new CopyTask(resourceManager, from, to);
@@ -38,18 +40,23 @@ public class CopyTask {
         this.to = to;
     }
 
-    public CopyTask recourcePathTransformer(RecourcePathTransformer transformer) {
+    public CopyTask pathTransformer(ResourcePathTransformer transformer) {
         resourcePathTransformers.add(transformer);
         return this;
     }
 
-    public CopyTask resourceFilter(ResourceFilter filter) {
-        filters.add(filter);
+    public CopyTask filter(FilterChain value) {
+        filter = value;
         return this;
     }
 
     public CopyTask templateProcessor(TemplateProcessor processor) {
-        templateProcessor = processor;
+        resourceProcessors.add(ResourceProcessor.of(processor));
+        return this;
+    }
+
+    public CopyTask templateProcessor(FilterChain filter, TemplateProcessor processor) {
+        resourceProcessors.add(ResourceProcessor.of(filter, processor));
         return this;
     }
 
@@ -62,11 +69,11 @@ public class CopyTask {
         return recursive(true);
     }
 
-    public void copy() throws TemplateEngineException, IOException {
+    public void copy() throws IOException {
         List<Item> items = resourceManager.getItems(from, recursive);
         for (Item i : items) {
             ResourcePath resourcePath = i.getPath().removeParent(from);
-            if (resourcePath.isEmpty() || !acceptItem(i)) {
+            if (resourcePath.isEmpty() || !filter.acceptItem(i)) {
                 continue;
             }
 
@@ -76,38 +83,74 @@ public class CopyTask {
                 f.mkdirs();
             } else if (i.isResource()) {
                 Resource resource = (Resource) i;
-                if (templateProcessor != null) {
-                    String content = new String(resource.getContent(), StandardCharsets.UTF_8);
-                    content = templateProcessor.convert(content);
-                    FileUtils.write(f, content, StandardCharsets.UTF_8);
-                } else {
-                    FileUtils.writeByteArrayToFile(f, resource.getContent());
+                String content = new String(resource.getContent(), StandardCharsets.UTF_8);
+                try {
+                    Optional<String> processedContent = processByTemplateProcessors(resource, content);
+                    if (processedContent.isPresent()) {
+
+                        FileUtils.write(f, content, StandardCharsets.UTF_8);
+                    } else {
+                        FileUtils.writeByteArrayToFile(f, resource.getContent());
+                    }
+                } catch (TemplateEngineException | HandlebarsException e) {
+                    String msg = String.format("TemplateProcessor failed to process template: '%s'",
+                            i.getPath());
+                    throw new IOException(msg, e);
                 }
             }
         }
     }
 
+    private Optional<String> processByTemplateProcessors(Item item, String content) throws TemplateEngineException {
+        boolean processed = false;
+        for (ResourceProcessor rp : resourceProcessors) {
+            if (rp.getFilters().acceptItem(item)) {
+                content = rp.getTemplateProcessor().convert(content);
+                processed = true;
+            }
+        }
+
+        return processed ? Optional.of(content) : Optional.empty();
+    }
+
     private ResourcePath transformPath(ResourcePath resourcePath) {
         ResourcePath targetPath = resourcePath;
-        for (RecourcePathTransformer t : resourcePathTransformers) {
+        for (ResourcePathTransformer t : resourcePathTransformers) {
             targetPath = t.apply(targetPath);
         }
         return targetPath;
     }
 
-    private boolean acceptItem(Item i) {
-        boolean accept = true;
-        for (ResourceFilter f : filters) {
-            Boolean a = f.accept(i);
-            if (a == Boolean.TRUE) {
-                accept = true;
-                break;
-            }
-            if (a == Boolean.FALSE) {
-                accept = false;
-                break;
-            }
+    static class ResourceProcessor {
+        private FilterChain filters;
+        private TemplateProcessor templateProcessor;
+
+        public static ResourceProcessor of(TemplateProcessor templateProcessor) {
+            return new ResourceProcessor(FilterChain.of(true), templateProcessor);
         }
-        return accept;
+
+        public static ResourceProcessor of(FilterChain filters, TemplateProcessor templateProcessor) {
+            return new ResourceProcessor(filters, templateProcessor);
+        }
+
+        private ResourceProcessor(FilterChain filters, TemplateProcessor templateProcessor) {
+            this.filters = filters;
+            this.templateProcessor = templateProcessor;
+        }
+
+        public String process(Item item, String content) throws TemplateEngineException {
+            if (filters.acceptItem(item)) {
+                return templateProcessor.convert(content);
+            }
+            return content;
+        }
+
+        public FilterChain getFilters() {
+            return filters;
+        }
+
+        public TemplateProcessor getTemplateProcessor() {
+            return templateProcessor;
+        }
     }
 }
