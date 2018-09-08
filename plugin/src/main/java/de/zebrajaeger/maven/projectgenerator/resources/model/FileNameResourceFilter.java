@@ -43,7 +43,6 @@ public class FileNameResourceFilter implements ResourceFilter {
             name = name.toLowerCase();
         }
 
-        boolean match = matchingFileNames.contains(name);
-        return accept ? Optional.of(match) : Optional.of(!match);
+        return matchingFileNames.contains(name) ? Optional.of(accept) : Optional.empty();
     }
 }

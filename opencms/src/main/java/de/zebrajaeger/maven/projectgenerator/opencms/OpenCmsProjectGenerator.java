@@ -5,6 +5,7 @@ import de.zebrajaeger.maven.projectgenerator.project.ProjectContext;
 import de.zebrajaeger.maven.projectgenerator.project.ProjectGenerator;
 import de.zebrajaeger.maven.projectgenerator.project.RequiredProperty;
 import de.zebrajaeger.maven.projectgenerator.resources.model.FileExtensionResourceFilter;
+import de.zebrajaeger.maven.projectgenerator.resources.model.FileNameResourceFilter;
 import de.zebrajaeger.maven.projectgenerator.resources.model.FilterChain;
 import de.zebrajaeger.maven.projectgenerator.resources.path.PackagePathTrandformer;
 import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
@@ -78,20 +79,28 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
                         .recursive()
                         .pathTransformer(
                                 PackagePathTrandformer.of(
-                                        coordinate.getArtifactId()))
+                                        coordinate.getArtifactId()
+                                )
+                        )
                         .pathTransformer(
                                 StringReplacerPathTransformer.of(
                                         StringReplacer.of(
                                                 DefaultReplacementDictionary.of(
-                                                        templateContext.getContext()))))
+                                                        templateContext.getContext()
+                                                )
+                                        )
+                                )
+                        )
                         .templateProcessor(
                                 FilterChain.of(
                                         false,
-                                        FileExtensionResourceFilter.of(
-                                                true,
-                                                "java", "xml")),
+                                        FileNameResourceFilter.of(true, "gulpfile.js"),
+                                        FileExtensionResourceFilter.of(true, "java", "xml")
+                                ),
                                 DefaultTemplateProcessor.of(
-                                        templateContext))
+                                        templateContext
+                                )
+                        )
                         .copy();
             }
         } catch (IOException e) {

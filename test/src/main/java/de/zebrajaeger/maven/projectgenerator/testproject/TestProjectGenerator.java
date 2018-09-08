@@ -6,7 +6,7 @@ import de.zebrajaeger.maven.projectgenerator.project.ProjectGenerator;
 import de.zebrajaeger.maven.projectgenerator.project.RequiredProperty;
 import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
 import de.zebrajaeger.maven.projectgenerator.templateengine.DefaultTemplateProcessor;
-import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateEngineException;
+import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateContext;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateProcessor;
 import de.zebrajaeger.maven.projectgenerator.utils.CopyTask;
 import de.zebrajaeger.maven.projectgenerator.utils.RandomUUID;
@@ -24,8 +24,8 @@ public class TestProjectGenerator implements ProjectGenerator {
     public static final String PROJECT_TEMPLATE = "project_template";
 
     @Override
-    public void generate(ProjectContext context) throws MojoExecutionException, MojoFailureException {
-        TemplateProcessor templateProcessor = DefaultTemplateProcessor.of();
+    public void generate(ProjectContext context) throws MojoExecutionException {
+        TemplateProcessor templateProcessor = DefaultTemplateProcessor.of(TemplateContext.of());
         templateProcessor.getTemplateContext().put("randomUUID", new RandomUUID());
         try {
             CopyTask.of(
@@ -34,7 +34,7 @@ public class TestProjectGenerator implements ProjectGenerator {
                     context.getWorkingDirectory())
                     .copy();
 
-        } catch (IOException | TemplateEngineException e) {
+        } catch (IOException e) {
             throw new MojoExecutionException("Can not copy resources to '" + context.getWorkingDirectory().getAbsolutePath() + "'", e);
         }
     }

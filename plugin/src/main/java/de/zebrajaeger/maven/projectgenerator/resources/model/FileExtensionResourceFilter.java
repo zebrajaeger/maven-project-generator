@@ -46,7 +46,6 @@ public class FileExtensionResourceFilter implements ResourceFilter {
             extension = extension.toLowerCase();
         }
 
-        boolean match = matchingExtension.contains(extension);
-        return accept ? Optional.of(match) : Optional.of(!match);
+        return matchingExtension.contains(extension) ? Optional.of(accept) : Optional.empty();
     }
 }

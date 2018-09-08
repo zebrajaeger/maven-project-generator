@@ -5,8 +5,8 @@ import de.zebrajaeger.maven.projectgenerator.resources.ResourceManager;
 import de.zebrajaeger.maven.projectgenerator.resources.model.FilterChain;
 import de.zebrajaeger.maven.projectgenerator.resources.model.Item;
 import de.zebrajaeger.maven.projectgenerator.resources.model.Resource;
-import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePathTransformer;
 import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePath;
+import de.zebrajaeger.maven.projectgenerator.resources.path.ResourcePathTransformer;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateEngineException;
 import de.zebrajaeger.maven.projectgenerator.templateengine.TemplateProcessor;
 import org.apache.commons.io.FileUtils;
@@ -87,8 +87,7 @@ public class CopyTask {
                 try {
                     Optional<String> processedContent = processByTemplateProcessors(resource, content);
                     if (processedContent.isPresent()) {
-
-                        FileUtils.write(f, content, StandardCharsets.UTF_8);
+                        FileUtils.write(f, processedContent.get(), StandardCharsets.UTF_8);
                     } else {
                         FileUtils.writeByteArrayToFile(f, resource.getContent());
                     }
@@ -104,12 +103,9 @@ public class CopyTask {
     private Optional<String> processByTemplateProcessors(Item item, String content) throws TemplateEngineException {
         boolean processed = false;
         for (ResourceProcessor rp : resourceProcessors) {
-            if (rp.getFilters().acceptItem(item)) {
-                content = rp.getTemplateProcessor().convert(content);
-                processed = true;
-            }
+            content = rp.process(item, content);
+            processed = true;
         }
-
         return processed ? Optional.of(content) : Optional.empty();
     }
 
@@ -140,6 +136,7 @@ public class CopyTask {
 
         public String process(Item item, String content) throws TemplateEngineException {
             if (filters.acceptItem(item)) {
+                templateProcessor.getTemplateContext().setSourcePath(item.getPath().toString());
                 return templateProcessor.convert(content);
             }
             return content;

@@ -9,16 +9,31 @@ import java.util.Map;
  * @author Lars Brandt, Silpion IT Solutions GmbH
  */
 public class TemplateContext {
+    private String sourcePath;
     private Map<String, Object> context = new HashMap<>();
 
     public static TemplateContext of() {
         return new TemplateContext();
     }
 
-    public static TemplateContext of(Map<String, Object> value) {
-        TemplateContext result = new TemplateContext();
-        result.putAll(value);
-        return result;
+    public static TemplateContext of(String sourcePath) {
+        return new TemplateContext(sourcePath);
+    }
+
+    public static TemplateContext of(String sourcePath, Map<String, Object> value) {
+        return new TemplateContext(sourcePath, value);
+    }
+
+    private TemplateContext() {
+    }
+
+    private TemplateContext(String sourcePath) {
+        this.sourcePath = sourcePath;
+    }
+
+    private TemplateContext(String sourcePath, Map<String, Object> context) {
+        this.context.putAll(context);
+        this.sourcePath = sourcePath;
     }
 
     public Object get(Object key) {
@@ -39,6 +54,14 @@ public class TemplateContext {
 
     public Map<String, Object> getContext() {
         return context;
+    }
+
+    public void setSourcePath(String sourcePath) {
+        this.sourcePath = sourcePath;
+    }
+
+    public String getSourcePath() {
+        return sourcePath;
     }
 
     @Override
