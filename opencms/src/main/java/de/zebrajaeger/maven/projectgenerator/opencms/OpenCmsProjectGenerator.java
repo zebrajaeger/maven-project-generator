@@ -47,10 +47,11 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
         templateContext.put("randomUUID", new RandomUUID());
         templateContext.put("UUID", new RandomUUID());
 
-        // common stuff
+        // {{artifactId}} stuff
         templateContext.put("coordinate", coordinate);
         templateContext.put("groupId", coordinate.getGroupId());
         templateContext.put("version", coordinate.getVersion());
+        templateContext.put("moduleVersion", SimpleVersion.of(coordinate.getVersion()));
 
         templateContext.put("modules", modules);
 
@@ -95,7 +96,7 @@ public class OpenCmsProjectGenerator implements ProjectGenerator {
                                 FilterChain.of(
                                         false,
                                         FileNameResourceFilter.of(true, "gulpfile.js"),
-                                        FileExtensionResourceFilter.of(true, "java", "xml")
+                                        FileExtensionResourceFilter.of(true, "java", "xml", "jsp", "tld", "tag")
                                 ),
                                 DefaultTemplateProcessor.of(
                                         templateContext

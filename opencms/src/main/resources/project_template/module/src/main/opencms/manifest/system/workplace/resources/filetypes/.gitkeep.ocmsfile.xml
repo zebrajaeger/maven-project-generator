@@ -3,8 +3,8 @@
         <source>${source}</source>
         <destination>${destination}</destination>
         <type>plain</type>
-        <uuidstructure>${UUID}</uuidstructure>
-        <uuidresource>${UUID}</uuidresource>
+        <uuidstructure>{{UUID}}</uuidstructure>
+        <uuidresource>{{UUID}}</uuidresource>
         <datelastmodified>${datelastmodified}</datelastmodified>
         <userlastmodified>Admin</userlastmodified>
         <datecreated>${datecreated}</datecreated>

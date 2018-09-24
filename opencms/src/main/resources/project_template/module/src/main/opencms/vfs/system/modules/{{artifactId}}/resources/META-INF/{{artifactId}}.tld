@@ -8,20 +8,20 @@
 
     <display-name>Module common taglib</display-name>
     <tlib-version>1.0</tlib-version>
-    <short-name>common</short-name>
-    <uri>http://${artifactId}/common</uri>
+    <short-name>{{artifactId}}</short-name>
+    <uri>http://{{artifactId}}</uri>
 
     <!-- ==================== TAGS ==================== -->
 
     <tag>
         <name>onlineProject</name>
-        <tag-class>${artifactId}.common.JspTagOnlineProject</tag-class>
+        <tag-class>{{package}}.common.JspTagOnlineProject</tag-class>
         <body-content>scriptless</body-content>
     </tag>
 
     <tag>
         <name>offlineProject</name>
-        <tag-class>${artifactId}.common.JspTagOfflineProject</tag-class>
+        <tag-class>{{package}}.common.JspTagOfflineProject</tag-class>
         <body-content>scriptless</body-content>
     </tag>
 
@@ -31,7 +31,7 @@
             version could be added to a link to solve caching problems.
         </description>
         <name>linkExternal</name>
-        <tag-class>${artifactId}.common.JspTagToExternalLink</tag-class>
+        <tag-class>{{artifactId}}.common.JspTagToExternalLink</tag-class>
         <body-content>scriptless</body-content>
         <attribute>
             <description>Flag link as absolute path link</description>
@@ -55,7 +55,7 @@
             Prints project build information
         </description>
         <name>buildInfo</name>
-        <tag-class>${artifactId}.common.JspTagProjectInfo</tag-class>
+        <tag-class>{{artifactId}}.common.JspTagProjectInfo</tag-class>
         <body-content>empty</body-content>
     </tag>
 
@@ -63,12 +63,12 @@
 
     <tag-file>
         <name>script</name>
-        <path>/META-INF/tags/common/script.tag</path>
+        <path>/META-INF/tags/{{artifactId}}/script.tag</path>
     </tag-file>
 
     <tag-file>
         <name>stylesheet</name>
-        <path>/META-INF/tags/common/stylesheet.tag</path>
+        <path>/META-INF/tags/{{artifactId}}/stylesheet.tag</path>
     </tag-file>
 
     <!-- ==================== FUNCTIONS ==================== -->
@@ -89,7 +89,7 @@
 
     <function>
         <name>hostId</name>
-        <function-class>${artifactId}.common.JspElFunctions</function-class>
+        <function-class>{{artifactId}}.common.JspElFunctions</function-class>
         <function-signature>java.lang.String getHostId(boolean)</function-signature>
     </function>
 </taglib>

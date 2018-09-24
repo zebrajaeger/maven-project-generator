@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="com" uri="http://${artifactId}/common" %>
+<%@ taglib prefix="com" uri="http://{{artifactId}}" %>
 
 <%--@elvariable id="cms" type="org.opencms.jsp.util.CmsJspStandardContextBean"--%>
 
@@ -24,23 +24,23 @@
     <meta name="title" content="${title}">
 
     <com:offlineProject>
-        <com:stylesheet>/system/modules/${artifactId}/resources/css/app.css</com:stylesheet>
-        <com:stylesheet>/system/modules/${artifactId}/resources/css/vendor.css</com:stylesheet>
+        <com:stylesheet>/system/modules/{{artifactId}}/resources/css/app.css</com:stylesheet>
+        <com:stylesheet>/system/modules/{{artifactId}}/resources/css/vendor.css</com:stylesheet>
     </com:offlineProject>
 
     <com:onlineProject>
-        <com:stylesheet>/system/modules/${artifactId}/resources/css/app.min.css</com:stylesheet>
-        <com:stylesheet>/system/modules/${artifactId}/resources/css/vendor.min.css</com:stylesheet>
+        <com:stylesheet>/system/modules/{{artifactId}}/resources/css/app.min.css</com:stylesheet>
+        <com:stylesheet>/system/modules/{{artifactId}}/resources/css/vendor.min.css</com:stylesheet>
     </com:onlineProject>
 
     <com:offlineProject>
-        <com:script async="true">/system/modules/${artifactId}/resources/js/vendor.js</com:script>
-        <com:script async="true">/system/modules/${artifactId}/resources/js/app.js</com:script>
+        <com:script async="true">/system/modules/{{artifactId}}/resources/js/vendor.js</com:script>
+        <com:script async="true">/system/modules/{{artifactId}}/resources/js/app.js</com:script>
     </com:offlineProject>
 
     <com:onlineProject>
-        <com:script async="true">/system/modules/${artifactId}/resources/js/vendor.min.js</com:script>
-        <com:script async="true">/system/modules/${artifactId}/resources/js/app.min.js</com:script>
+        <com:script async="true">/system/modules/{{artifactId}}/resources/js/vendor.min.js</com:script>
+        <com:script async="true">/system/modules/{{artifactId}}/resources/js/app.min.js</com:script>
     </com:onlineProject>
     <script>
         var vendorReady = false;

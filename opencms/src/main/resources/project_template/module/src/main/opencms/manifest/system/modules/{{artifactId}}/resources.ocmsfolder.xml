@@ -2,7 +2,7 @@
 <file>
     <destination>${destination}</destination>
     <type>folder</type>
-    <uuidstructure>${UUID}</uuidstructure>
+    <uuidstructure>{{UUID}}</uuidstructure>
     <datelastmodified>${datelastmodified}</datelastmodified>
     <userlastmodified>Admin</userlastmodified>
     <datecreated>${datecreated}</datecreated>

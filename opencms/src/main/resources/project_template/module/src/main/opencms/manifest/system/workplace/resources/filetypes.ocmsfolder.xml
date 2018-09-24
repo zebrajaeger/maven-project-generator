@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><file>
     <destination>${destination}</destination>
     <type>folder</type>
-    <uuidstructure>${UUID}</uuidstructure>
+    <uuidstructure>{{UUID}}</uuidstructure>
     <datelastmodified>${datelastmodified}</datelastmodified>
     <userlastmodified>Admin</userlastmodified>
     <datecreated>${datecreated}</datecreated>

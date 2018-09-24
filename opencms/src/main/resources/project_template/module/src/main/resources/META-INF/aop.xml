@@ -7,6 +7,6 @@
     </weaver>
 
     <aspects>
-        <aspect name="${rootArtifactId}.develop.DebugResourceInterceptor" />
+        <aspect name="{{rootArtifactId}}.develop.DebugResourceInterceptor" />
     </aspects>
 </aspectj>

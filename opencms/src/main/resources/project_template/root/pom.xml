@@ -682,8 +682,8 @@
                     <version>${cmsshell-maven-plugin.version}</version>
                     <dependencies>
                         <dependency>
-                            <groupId>${groupId}</groupId>
-                            <artifactId>${artifactId}.basis</artifactId>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>${project.artifactId}</artifactId>
                             <version>${project.version}</version>
                         </dependency>
                     </dependencies>
@@ -761,7 +761,7 @@
             <id>with-git-properties</id>
             <activation>
                 <property>
-                    <name>!skipGitProperties</name>
+                    <name>!skip-git</name>
                 </property>
             </activation>
             <build>

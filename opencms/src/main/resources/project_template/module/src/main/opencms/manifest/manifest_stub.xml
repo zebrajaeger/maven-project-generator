@@ -8,12 +8,12 @@
         <export_version>7</export_version>
     </info>
     <module>
-        <name>${rootArtifactId}.basis</name>
-        <nicename><![CDATA[Basis Modul]]></nicename>
-        <group>${rootArtifactId}</group>
-        <class>${rootArtifactId}.basis.ActionClass</class>
+        <name>{{artifactId}}</name>
+        <nicename><![CDATA[{{artifactId}}]]></nicename>
+        <group>{{artifactId}}</group>
+        <class>{{artifactId}}.ActionClass</class>
         <description/>
-        <version>${moduleversion}</version>
+        <version>{{moduleVersion}}</version>
         <authorname><![CDATA[]]></authorname>
         <authoremail><![CDATA[]]></authoremail>
         <datecreated/>
@@ -21,12 +21,12 @@
         <dateinstalled/>
         <dependencies/>
         <exportpoints>
-            <exportpoint uri="/system/modules/${rootArtifactId}.basis/lib/" destination="WEB-INF/lib/"/>
-            <exportpoint uri="/system/modules/${rootArtifactId}.basis/resources/META-INF/common.tld" destination="WEB-INF/common.tld"/>
-            <exportpoint uri="/system/modules/${rootArtifactId}.basis/resources/META-INF/tags/" destination="META-INF/tags/"/>
+            <exportpoint uri="/system/modules/{{artifactId}}/lib/" destination="WEB-INF/lib/"/>
+            <exportpoint uri="/system/modules/{{artifactId}}/resources/META-INF/{{artifactId}}.tld" destination="WEB-INF/{{artifactId}}.tld"/>
+            <exportpoint uri="/system/modules/{{artifactId}}/resources/META-INF/tags/" destination="META-INF/tags/"/>
         </exportpoints>
         <resources>
-            <resource uri="/system/modules/${rootArtifactId}.basis/"/>
+            <resource uri="/system/modules/{{artifactId}}/"/>
         </resources>
         <parameters/>
         <resourcetypes>
