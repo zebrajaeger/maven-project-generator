@@ -1,0 +1,1 @@
+mvn versions:set -DprocessAllModules=true -DnewVersion=%1
