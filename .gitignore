@@ -28,4 +28,5 @@ hs_err_pid*
 **/target
 
 release.properties
-**/pom.xml.releasebackup
+**/pom.xml.releaseBackup
+**/pom.xml.versionsBackup
