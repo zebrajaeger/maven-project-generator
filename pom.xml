@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.zebrajaeger</groupId>
     <artifactId>maven-project-generator-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <packaging>pom</packaging>
 
@@ -18,14 +17,14 @@
     </licenses>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Alternative to maven archetype </description>
+    <description>Alternative to maven archetype</description>
     <url>https://github.com/zebrajaeger/maven-project-generator</url>
 
     <developers>
         <developer>
             <name>Lars Brandt</name>
             <email>zebrajaeger@zebrajaeger.de</email>
-            <organizationUrl>http://lars-brandt.de</organizationUrl>
+            <organizationUrl>https://lars-brandt.de</organizationUrl>
         </developer>
     </developers>
 
@@ -33,6 +32,7 @@
         <connection>scm:git:git://github.com/zebrajaeger/maven-project-generator.git</connection>
         <developerConnection>scm:git:ssh://github.com:zebrajaeger/maven-project-generator.git</developerConnection>
         <url>https://github.com/zebrajaeger/maven-project-generator/tree/master</url>
+        <tag>maven-project-generator-parent-0.0.1</tag>
     </scm>
 
     <properties>
@@ -79,7 +79,7 @@
                         <version>1.6.8</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
+                            <serverId>ossrh.zj</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
@@ -97,6 +97,10 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -137,8 +141,12 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh.zj</id>
+            <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 </project>
